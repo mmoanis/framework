@@ -1,3 +1,5 @@
+#pragma once
+
 // Represents a one pass -execution- of the simulation which implies the
 // execution of all the simulation stages.
 // A simulation consits of multiple events that are independent of each others.
