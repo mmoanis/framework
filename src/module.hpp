@@ -1,3 +1,5 @@
+#pragma once
+
 #include <random>
 #include <string>
 #include <memory>
@@ -13,7 +15,7 @@ public:
 	// params: name - The name of module to create.
 	// returns: pointer to the correct class of the module request or null
 	// 		if there is no such module.
-	static std::shared_ptr<Module*> createModule(const std::string& name );
+	static std::shared_ptr<Module> createModule(const std::string& name );
 
 	// Main method for each module. This method is called in each event to
 	// execute the module given the information about the current event.
