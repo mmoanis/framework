@@ -31,6 +31,7 @@ Configuration Configuration::createConfiguration(std::string config_file_path)
     // what we are looking for
     bool seen_number_of_events_before = false;
     bool seen_modules_before = false;
+    bool seen_seed_before = false;
 
     std::string line;
     while (getline(config_file, line)) {
@@ -72,6 +73,7 @@ Configuration Configuration::createConfiguration(std::string config_file_path)
             } catch (...) {
                 return config;
             }
+            seen_seed_before = true;
         } else if (key == "modules") {
             if (seen_modules_before) {
                 std::cerr << "ERROR: Modules were defined multiple times\n";
@@ -84,6 +86,11 @@ Configuration Configuration::createConfiguration(std::string config_file_path)
             }
         }
     }
+
+    if (!seen_seed_before) {
+        // TODO: initialize the seed using standard seeding
+    }
+
     // check we have the needed values
     config.correct_ = seen_number_of_events_before && seen_modules_before && config.module_names_.size() > 0;
 
