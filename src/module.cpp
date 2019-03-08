@@ -8,6 +8,8 @@
 #include "module4.hpp"
 #include "module5.hpp"
 
+#include <iostream>
+
 // Factory method for creating modules. Each new module should
 // declare it self here
 // params: name - The name of module to create.
@@ -41,9 +43,11 @@ std::shared_ptr<Module> Module::createModule(const std::string& name )
 void Module::run(Event *e)
 {
     // TODO: should return the string? print? or save in event!
-    std::string s = name_ + std::to_string(random_engine_())
-                    + std::to_string(random_engine_());
+    std::string s = name_ + "_" + std::to_string(random_engine_())
+                    + "_" + std::to_string(random_engine_());
     (void)s;
+
+    std::cout << "Event#" << e->getNumber() << " : " << s << std::endl;
 }
 
 // Set the seed of the underlying random number generator.
