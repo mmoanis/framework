@@ -7,6 +7,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <atomic>
+#include <future>
 
 // Execution manager class that allows for parallel execution of events.
 // Each event is considered an individal task that are submitted to the
@@ -17,8 +18,14 @@
 class ThreadPool
 {
 public:
+    using Task = std::packaged_task<std::string(void)>;
+    using TaskResult = std::future<std::string>;
+
     // Constructor by default assumes the execution is on one thread.
-    explicit ThreadPool(size_t number_of_workers = 1);
+    explicit ThreadPool(size_t number_of_workers = 8);
+
+    ThreadPool(const ThreadPool&) = delete;
+    ThreadPool& operator=(const ThreadPool&) = delete;
 
     // Submits an event to be executed by the workers threads.
     //
@@ -26,7 +33,7 @@ public:
     // then the events will be executed in the client's thread.
     // Otherwise this will just enqueue the task and let the workers finish
     // the job.
-    void submit(Event *e);
+    TaskResult submit(const Event& e);
 
     // Block waiting for the execution of all submitted events.
     // Any tasks submitted after this call will not be executed.
@@ -34,10 +41,10 @@ public:
 
 private:
     // Helper method to safely push an event to the shared task queue.
-    void submitToTaskQueue(Event *e);
+    void submitToTaskQueue(Task && t);
 
     // Helper method to safely pop an event from the shared task queue.
-    Event* popFromTaskQueue();
+    bool popFromTaskQueue(Task &t);
 
     // conditional variable for managing the shared queue
     std::condition_variable condition_;
@@ -47,7 +54,7 @@ private:
     std::atomic_bool finished_ {false};
 
     // task queue
-    std::queue<Event *> task_queue_;
+    std::queue<std::packaged_task<std::string(void)>> task_queue_;
 
     // mutex for making thread safe operations on the task queue.
     std::mutex mutex_;

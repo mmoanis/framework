@@ -5,13 +5,9 @@ ThreadPool::ThreadPool(size_t number_of_workers)
 {
     auto worker = [this]() {
         while (!finished_ || task_queue_.size() > 0) {
-            Event* e = popFromTaskQueue();
-            if (e) {
-                //e->run();
-                (void)e;
-
-                std::lock_guard<std::mutex> lock(mutex_io_);
-                std::cout << "Worker #" << std::this_thread::get_id() << " executed event #" << e->getNumber() << '\n';
+            Task task;
+            if (popFromTaskQueue(task) && task.valid()) {
+                task();
             }
         }
     };
@@ -22,7 +18,7 @@ ThreadPool::ThreadPool(size_t number_of_workers)
 }
 
 // Helper method to safely pop an event from the shared task queue.
-Event* ThreadPool::popFromTaskQueue()
+bool ThreadPool::popFromTaskQueue(Task &t)
 {
     std::unique_lock<std::mutex> lock(mutex_);
 
@@ -33,14 +29,15 @@ Event* ThreadPool::popFromTaskQueue()
         return task_queue_.size() > 0 || finished_;
     });
 
-    // get the firt read event
-    Event * e = nullptr;
-    if (task_queue_.size() > 0) {
-        e = task_queue_.front();
-        task_queue_.pop();
-    } 
+    if (task_queue_.size() == 0) {
+        return false;
+    }
 
-    return e;
+    // get the firt read event
+    t = std::move(task_queue_.front());
+    task_queue_.pop();
+
+    return true;
 }
 
 // Submits an event to be executed by the workers threads.
@@ -49,28 +46,36 @@ Event* ThreadPool::popFromTaskQueue()
 // then the events will be executed in the client's thread.
 // Otherwise this will just enqueue the task and let the workers finish
 // the job.
-void ThreadPool::submit(Event *e)
+ThreadPool::TaskResult ThreadPool::submit(const Event& e)
 {
+    // create the task function that will be executed
+    Task t([e, this](){
+        std::lock_guard<std::mutex> lock(mutex_io_);
+        std::cout << "Worker #" << std::this_thread::get_id() << " executed event #" << e.getNumber() << '\n';
+
+        return "";
+    });
+
     if (workers_.size() > 0) {
         // add the task to the queue
-        submitToTaskQueue(e);
+        submitToTaskQueue(std::move(t));
     } else {
         // execute on caller thread since we have no workers
-        //e->run();
-        std::cout << "Executed event #" << e->getNumber() << " on main thread\n";
+        t();
     }
 
+    return t.get_future();
 }
 
 // Helper method to safely push an event to the shared task queue.
-void ThreadPool::submitToTaskQueue(Event *e)
+void ThreadPool::submitToTaskQueue(Task && t)
 {
     // enter the critical section
     {
         std::lock_guard<std::mutex> lock(mutex_);
 
         // insert the event in the queue
-        task_queue_.push(e);
+        task_queue_.push(std::move(t));
     }
 
     // notify workers waiting for tasks
