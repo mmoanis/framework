@@ -1,28 +1,45 @@
+#include "configuration.hpp"
 #include "simulation.hpp"
-#include "threadPool.hpp"
 
 #include <iostream>
+#include <chrono>
+using namespace std::chrono;
 using std::cout;
 using std::endl;
 using std::cin;
 
-int main() {
-	unsigned int number_of_events = 0, seed, threads = 0;
+int main(int argc, char* argv[]) {
+	int return_code = -1;
 	cout << "Framework ..." << endl;
-	cout << "Enter the required number of events to simulate: ";
-	cin >> number_of_events;
-	cout << "Enter the initial seed: ";
-	cin >> seed;
-	//cout << "Enter the number of threads(0 means no multithreading): ";
-	//cin >> threads;
-	(void) threads;
 
-	Simulation simulation(number_of_events, seed);
-	if (simulation.init()) {
-		simulation.run();
-	} else {
-		std::cerr << "Terminating ..." << endl;
+	if (argc != 2) {
+		std::cerr << "ERROR: Incorrect number of arguments\n";
+		std::cerr << "Usage: framework /path/to/configuration.file\n";
+		return return_code;
 	}
 
-	return 0;
+	Configuration config = Configuration::createConfiguration(argv[1]);
+	if (config.correct()) {
+		Simulation simulation(config);
+		if (simulation.init()) {
+			high_resolution_clock::time_point start_time = high_resolution_clock::now();
+			
+			// execute the simulation
+			simulation.run();
+			
+			high_resolution_clock::time_point finish_time = high_resolution_clock::now();
+
+			auto duration = duration_cast<microseconds>( finish_time - start_time ).count();
+			cout << "INFO: Finished simulation with " 
+				 << config.getNumberOfEvents() << " events in " << duration << "us\n";
+
+			// exit normally
+			return_code = 0;
+		}
+	} else {
+		std::cerr << "Incorrect configuration file...\n";
+	}
+	std::cout << "Terminating ..." << endl;
+
+	return return_code;
 }

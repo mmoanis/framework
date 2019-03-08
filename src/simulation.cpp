@@ -4,32 +4,25 @@
 #include <array>
 #include <iostream>
 
-Simulation::Simulation(unsigned int number_of_events, unsigned int seed)
-        : number_of_events_(number_of_events)
+Simulation::Simulation(const Configuration& config)
+        : config_(config), number_of_events_(config_.getNumberOfEvents())
 {
-    random_engine_.seed(seed);
+    random_engine_.seed(config_.getInitialSeed());
 }
 
 // Initialize the simulation modules.
 bool Simulation::init()
 {
-    // the modules that need to be loaded in the simulation
-    const std::array<std::string, 5> modules_to_load = {
-        "Module1",
-        "Module2",
-        "Module3",
-        "Module4",
-        "Module5"
-    };
+    std::vector<std::string> modules_to_load = config_.getModuleNames();
 
     // try to create the correct modules
-    for (size_t i = 0; i < modules_to_load.size(); ++i) {
-        std::shared_ptr<Module> module = Module::createModule(modules_to_load[i]);
+    for (const std::string& module_name : modules_to_load) {
+        std::shared_ptr<Module> module = Module::createModule(module_name);
         if (module) {
-            std::cout << "INFO: Loaded module: " << modules_to_load[i] << std::endl;
+            std::cout << "INFO: Loaded module: " << module_name << std::endl;
             modules_.push_back(module);
         } else {
-            std::cerr << "ERROR: Invalid Modules name: " << modules_to_load[i] << std::endl;
+            std::cerr << "ERROR: Invalid Modules name: " << module_name << std::endl;
             return false;
         }
     }

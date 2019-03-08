@@ -3,6 +3,7 @@ set(SRC_FILES
     module.cpp
     simulation.cpp
     threadPool.cpp
+    configuration.cpp
 )
 
 add_executable(framework ${SRC_FILES})

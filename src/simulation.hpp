@@ -4,13 +4,14 @@
 #include <vector>
 
 #include "module.hpp"
+#include "configuration.hpp"
 
 // The main simulation engine in the framework. Controlls the modules
 // and the execution of all simulation events.
 class Simulation
 {
 public:
-    explicit Simulation(unsigned int number_of_events, unsigned int seed);
+    explicit Simulation(const Configuration& config);
 
     // Initialize the simulation modules.
     bool init();
@@ -19,6 +20,9 @@ public:
     void run();
 
 private:
+    // reference to the configuration file.
+    const Configuration& config_;
+
     // list of loaded modules in the simulation
     std::vector<std::shared_ptr<Module>> modules_;
 
