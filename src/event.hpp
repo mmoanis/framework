@@ -11,28 +11,22 @@ public:
     // Construct an event with a given number and an initial seed to
     // the random numbers generated in this event.
     explicit Event(unsigned int number, unsigned int seed)
-        : number_(number) {
-        random_engine_.seed(seed);
-    }
-
-    // Copys are disallowed
-    Event(const Event&) = delete;
-    Event& operator=(const Event&) = delete;
+        : number_(number), seed_(seed) {}
 
     // Returns the number of this event.
     unsigned int getNumber() const {
         return number_;
     }
 
-    // Returns a random number to be used specifically in this event.
-    unsigned int getRandomNumber() {
-        return random_engine_();
+    // Returns the seed to be used by the random number generator
+    unsigned int getSeed() const {
+        return seed_;
     }
 
 private:
     // the id of the event in the simulation.
     unsigned int number_ {0};
 
-    // random number generator associated with this event.
-    std::mt19937 random_engine_;
+    // seed used for this event
+    unsigned int seed_ {0};
 };

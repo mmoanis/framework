@@ -39,12 +39,12 @@ int main(int argc, char* argv[]) {
 			
 			high_resolution_clock::time_point finish_time = high_resolution_clock::now();
 
-			auto duration = duration_cast<microseconds>( finish_time - start_time ).count();
+			auto duration = duration_cast<seconds>( finish_time - start_time ).count();
 
 			// optionally output runtime information
 			if (verbose) {
 				cout << "INFO: Finished simulation with " 
-					<< config.getNumberOfEvents() << " events in " << duration << "us\n";
+					<< config.getNumberOfEvents() << " events in " << duration << " s\n";
 			}
 
 			// exit normally
