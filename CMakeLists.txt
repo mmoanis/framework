@@ -16,3 +16,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Add project source code in the src directory
 add_subdirectory(src)
+
+# Add regression tests
+enable_testing()
+add_subdirectory(tests)
