@@ -22,7 +22,7 @@ public:
 	// execute the module given the information about the current event.
 	// params: event - Current event of the simulation.
 	// Note: This should be pure virtual.
-	virtual std::string run(std::shared_ptr<Event> &e);
+	virtual std::string run(const Event &);
 
 	// Set the seed of the underlying random number generator.
 	// void setSeed(unsigned int seed);

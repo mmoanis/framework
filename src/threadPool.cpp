@@ -80,7 +80,7 @@ ThreadPool::TaskResult ThreadPool::submit(ThreadPool::TaskType&& func,
     } else {
         // execute on caller thread since we have no workers
         // no need for any heap allocations
-        std::packaged_task<std::string(std::shared_ptr<Event>)> task(func);
+        std::packaged_task<std::string(Event)> task(func);
         result = task.get_future();
 
         task(param);

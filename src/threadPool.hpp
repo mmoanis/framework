@@ -20,7 +20,7 @@ class ThreadPool
 {
 public:
     using TaskResult = std::future<std::string>;
-    using TaskParamType = std::shared_ptr<Event>;
+    using TaskParamType = Event;
     using TaskType = std::function<std::string(TaskParamType)>;
 
     // Constructor by default assumes the execution is on one thread.

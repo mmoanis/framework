@@ -13,10 +13,6 @@ public:
     explicit Event(unsigned int number, unsigned int seed)
         : number_(number), seed_(seed) {}
 
-    // Copys are disallowed
-    Event(const Event&) = delete;
-    Event& operator=(const Event&) = delete;
-
     // Returns the number of this event.
     unsigned int getNumber() const {
         return number_;

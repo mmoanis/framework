@@ -47,7 +47,7 @@ void Simulation::run()
         unsigned int seed = random_engine_();
         
         // construct a new event object
-        simulation_results[i] = thread_pool.submit([this](std::shared_ptr<Event> e) {
+        simulation_results[i] = thread_pool.submit([this](const Event& e) {
             std::string event_result;
 
             // simulate the event
@@ -57,7 +57,7 @@ void Simulation::run()
             }
 
             return event_result;
-        }, std::make_shared<Event>(i+1, seed));
+        }, Event{i+1, seed});
     }
 
     // execute the simulation using specified number of threads
