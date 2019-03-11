@@ -6,7 +6,7 @@
 
 class Event;
 
-// Abstract module in the simulation. Module implementations must be derive
+// Abstract module in the simulation. Module implementations must be derived
 // from this class.
 class Module {
 public:
@@ -21,20 +21,19 @@ public:
 	// execute the module given the information about the current event.
 	// params: event - Current event of the simulation.
 	// Note: This should be pure virtual.
-	virtual void run(Event *);
+	virtual std::string run(std::shared_ptr<Event> &e);
 
 	// Set the seed of the underlying random number generator.
-	void setSeed(unsigned int seed);
+	//void setSeed(unsigned int seed);
 
 protected:
 	// Constructor of the abstract class. It's made protected to enforce this
 	// class being abstract and only derived classes can be instantiated.
-	Module(std::string name) : name_(name) {
-	}
+	Module(std::string name) : name_(name) {}
 
 	// module unique name
 	std::string name_;
 
 	// mersenne twister pseudo-random number generator.
-	std::mt19937 random_engine_;
+	//std::mt19937 random_engine_;
 };

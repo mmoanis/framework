@@ -1,10 +1,10 @@
 #pragma once
 
-#include <random>
-#include <vector>
-
 #include "module.hpp"
 #include "configuration.hpp"
+
+#include <random>
+#include <vector>
 
 // The main simulation engine in the framework. Controlls the modules
 // and the execution of all simulation events.
@@ -30,5 +30,6 @@ private:
     unsigned int number_of_events_ {0};
 
     // mersenne twister pseudo-random number generator.
+    // this is the core generator of the simulator.
 	std::mt19937 random_engine_;
 };
