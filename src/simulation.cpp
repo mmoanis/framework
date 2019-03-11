@@ -10,6 +10,8 @@ using namespace std::chrono_literals;
 Simulation::Simulation(const Configuration& config)
         : config_(config), number_of_events_(config_.getNumberOfEvents())
 {
+    std::cout << "INFO: Using seed= " << config_.getInitialSeed() << std::endl;
+
     random_engine_.seed(config_.getInitialSeed());
 }
 

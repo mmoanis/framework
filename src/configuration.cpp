@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <ctime>
 
 // Helper to parse a number
 unsigned int parseNumber(std::string number)
@@ -88,7 +89,7 @@ Configuration Configuration::createConfiguration(std::string config_file_path)
     }
 
     if (!seen_seed_before) {
-        // TODO: initialize the seed using standard seeding
+        config.initial_seed_ = static_cast<unsigned int>(time(NULL));
     }
 
     // check we have the needed values
