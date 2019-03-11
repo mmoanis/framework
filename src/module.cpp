@@ -43,13 +43,22 @@ std::shared_ptr<Module> Module::createModule(const std::string& name )
 // do exactly the same thing, for simplicity I keep it.
 std::string Module::run(std::shared_ptr<Event> &e)
 {
-    std::string s = name_ + "_" + std::to_string(e->getRandomNumber())
-                    + "_" + std::to_string(e->getRandomNumber()) + '\n';
+    unsigned int n1, n2;
+
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        random_engine_.seed(e->getSeed());
+        n1 = random_engine_();
+        n2 = random_engine_();
+    }
+
+    std::string s = name_ + "_" + std::to_string(n1)
+                    + "_" + std::to_string(n2) + '\n';
     return s;
 }
 
 // Set the seed of the underlying random number generator.
-//void Module::setSeed(unsigned int seed)
-//{
+// void Module::setSeed(unsigned int seed)
+// {
 //    random_engine_.seed(seed);
-//}
+// }
