@@ -1,7 +1,5 @@
 #pragma once
 
-#include <random>
-
 // Event is a full execution of a simulation. Each event is identified by an ID.
 // Additionally, each event has its own random number generator that can be
 // used to draw random numbers specific to this event. This allows for

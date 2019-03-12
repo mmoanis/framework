@@ -59,7 +59,8 @@ ThreadPool::TaskResult ThreadPool::submit(ThreadPool::TaskType&& func,
     // in case there are no worker threads, we are going to directly execute
     // the task on the caller thread since we have none.
     if (workers_.size() > 0) {
-        // allocate task to be executed
+        // allocate task to be executed. Exception throwed inside the submitted task
+        // will be stored in the future object so non of our problem here
         auto task = std::make_shared<std::packaged_task<std::string()>> (
             std::bind(std::forward<TaskType>(func), std::forward<TaskParamType>(param)));
         result = task->get_future();

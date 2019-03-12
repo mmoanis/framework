@@ -21,19 +21,20 @@ unsigned int parseNumber(std::string number)
 Configuration Configuration::createConfiguration(std::string config_file_path)
 {
     Configuration config;
-    std::ifstream config_file(config_file_path);
 
     // open config file
+    std::ifstream config_file(config_file_path);
     if (!config_file) {
         std::cerr << "ERROR: Couldn't open configuration file " << config_file_path << '\n';
         return config;
     }
 
-    // what we are looking for
+    // what we are looking for to consider this file as correct and return a valid object
     bool seen_number_of_events_before = false;
     bool seen_modules_before = false;
     bool seen_seed_before = false;
 
+    // read the file line by line expecting a key-value pair on each line.
     std::string line;
     while (getline(config_file, line)) {
         if (line.empty()) {
@@ -50,6 +51,7 @@ Configuration Configuration::createConfiguration(std::string config_file_path)
             return config;
         }
 
+        // match the key with any of the keywords
         if (key == "number_of_events") {
             if (seen_number_of_events_before) {
                 std::cerr << "ERROR: Number of events was defined multiple times\n";
@@ -88,6 +90,7 @@ Configuration Configuration::createConfiguration(std::string config_file_path)
         }
     }
 
+    // initialize the seed if not specified in file
     if (!seen_seed_before) {
         config.initial_seed_ = static_cast<unsigned int>(time(NULL));
     }

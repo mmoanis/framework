@@ -28,8 +28,11 @@ int main(int argc, char* argv[]) {
 		filename = std::string(argv[1]);
 	}
 
+	// read and check configuration file correctness
 	Configuration config = Configuration::createConfiguration(filename);
 	if (config.correct()) {
+
+		// initialize the simulation given the configuration
 		Simulation simulation(config);
 		if (simulation.init()) {
 			high_resolution_clock::time_point start_time = high_resolution_clock::now();

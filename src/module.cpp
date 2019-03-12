@@ -1,7 +1,7 @@
 #include "module.hpp"
 #include "event.hpp"
 
-// modules are statically linked to the executable
+// modules are statically linked to the executable for simplicity
 #include "module1.hpp"
 #include "module2.hpp"
 #include "module3.hpp"
@@ -43,8 +43,11 @@ std::shared_ptr<Module> Module::createModule(const std::string& name )
 // do exactly the same thing, for simplicity I keep it.
 std::string Module::run(const Event& e)
 {
+    // draw two random numbers
     unsigned int n1, n2;
 
+    // need to be carefull since the underlying random number engine
+    // is not thread safe
     {
         std::lock_guard<std::mutex> lock(mutex_);
         random_engine_.seed(e.getSeed());
@@ -56,9 +59,3 @@ std::string Module::run(const Event& e)
                     + "_" + std::to_string(n2) + '\n';
     return s;
 }
-
-// Set the seed of the underlying random number generator.
-// void Module::setSeed(unsigned int seed)
-// {
-//    random_engine_.seed(seed);
-// }
