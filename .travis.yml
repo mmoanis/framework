@@ -25,7 +25,7 @@ matrix:
       env:
         - MATRIX_EVAL1="CC=gcc-7 && CXX=g++-7"
         - MATRIX_EVAL2="CC=clang-5.0 && CXX=clang++-5.0"
-   - os: osx
+    - os: osx
       osx_image: xcode8
       env:
         - MATRIX_EVAL3="CC=gcc-4.9 && CXX=g++-4.9"
