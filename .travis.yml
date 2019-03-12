@@ -1,13 +1,5 @@
 language: cpp
 
-os:
-  - linux
-  - osx
-
-compiler:
-  - gcc
-  - clang
-
 matrix:
   include:
     - os: linux
@@ -15,15 +7,24 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-5.0
             - george-edison55-precise-backports
           packages:
             - g++-7
-            - clang-5.0
             - cmake-data
             - cmake 
       env:
         - MATRIX_EVAL1="CC=gcc-7 && CXX=g++-7"
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-trusty-5.0
+            - george-edison55-precise-backports
+          packages:
+            - clang-5.0
+            - cmake-data
+            - cmake 
+      env:
         - MATRIX_EVAL2="CC=clang-5.0 && CXX=clang++-5.0"
     - os: osx
       osx_image: xcode8
