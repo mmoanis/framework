@@ -48,15 +48,25 @@ void Simulation::run()
         
         // construct a new event object
         simulation_results[i] = thread_pool.submit([this](const Event& e) {
+            ////// Event execution function begins ///////
+
+            // per thread random number generator
+            static thread_local std::mt19937 thread_random_generator_;
+
+            // event result that will be saved in the shared future state
             std::string event_result;
+
+            // use the seed specific to the current event
+            thread_random_generator_.seed(e.getSeed());
 
             // simulate the event
             for (auto &module : modules_) {
-                event_result += module->run(e);
+                event_result += module->run(e, &thread_random_generator_);
                 //std::this_thread::sleep_for(100ms);
             }
 
             return event_result;
+            //// Event execution function ends //////
         }, Event{i+1, seed});
     }
 

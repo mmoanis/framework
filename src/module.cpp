@@ -41,7 +41,7 @@ std::shared_ptr<Module> Module::createModule(const std::string& name )
 // params: event - Current event of the simulation.
 // Note: This should be pure virtual but since all modules of this example
 // do exactly the same thing, for simplicity I keep it.
-std::string Module::run(const Event& e)
+std::string Module::run(const Event& e, std::mt19937* random_engine)
 {
     // draw two random numbers
     unsigned int n1, n2;
@@ -49,10 +49,10 @@ std::string Module::run(const Event& e)
     // need to be carefull since the underlying random number engine
     // is not thread safe
     {
-        std::lock_guard<std::mutex> lock(mutex_);
-        random_engine_.seed(e.getSeed());
-        n1 = random_engine_();
-        n2 = random_engine_();
+        //std::lock_guard<std::mutex> lock(mutex_);
+        //random_engine_.seed(e.getSeed());
+        n1 = (*random_engine)();
+        n2 = (*random_engine)();
     }
 
     std::string s = name_ + "_" + std::to_string(n1)

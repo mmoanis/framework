@@ -28,7 +28,7 @@ public:
 	// execute the module given the information about the current event.
 	// params: event - Current event of the simulation.
 	// Note: This should be pure virtual.
-	virtual std::string run(const Event &);
+	virtual std::string run(const Event &, std::mt19937* random_engine);
 
 protected:
 	// Constructor of the abstract class. It's made protected to enforce this
@@ -39,8 +39,8 @@ protected:
 	std::string name_;
 
 	// mersenne twister pseudo-random number generator.
-	std::mt19937 random_engine_;
+	//std::mt19937 random_engine_;
 
 	// associated mutex to access the random number
-	std::mutex mutex_;
+	//std::mutex mutex_;
 };
