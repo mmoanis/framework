@@ -13,30 +13,12 @@ matrix:
             - cmake-data
             - cmake 
       env:
-        - MATRIX_EVAL1="CC=gcc-7 && CXX=g++-7"
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-5.0
-            - george-edison55-precise-backports
-          packages:
-            - clang-5.0
-            - cmake-data
-            - cmake 
-      env:
-        - MATRIX_EVAL2="CC=clang-5.0 && CXX=clang++-5.0"
-    - os: osx
-      osx_image: xcode8
-      env:
-        - MATRIX_EVAL3="CC=gcc-4.9 && CXX=g++-4.9"
+        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
     - os: osx
       osx_image: xcode10.1
 
 before_install:
-  - eval "${MATRIX_EVAL1}"
-  - eval "${MATRIX_EVAL2}"
-  - eval "${MATRIX_EVAL3}"
+  - eval "${MATRIX_EVAL}"
 
 script:
   - mkdir build
