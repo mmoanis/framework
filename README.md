@@ -30,13 +30,16 @@ Sample configuration files and their respective output in the directory `example
 
 # Building
 The project uses `cmake` to generate build files. Please follow the following steps to build the framework using Unix Makefiles.
-`
+```
 mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
-make`
+make
+```
 
 To execute the tests you can use the following command after building the framework:
-`make test`
+```
+make test
+```
 
 # Structure
 The repository is structured into 3 directories as follows:
