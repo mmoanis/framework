@@ -37,10 +37,4 @@ protected:
 
 	// module unique name
 	std::string name_;
-
-	// mersenne twister pseudo-random number generator.
-	//std::mt19937 random_engine_;
-
-	// associated mutex to access the random number
-	//std::mutex mutex_;
 };
