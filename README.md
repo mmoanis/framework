@@ -67,6 +67,7 @@ Finally, simulation results are read from the `std::future` state and written to
 ## Design choices
 This section will describe some design choices made in implementing the framework. Most importantly, the choice of who owns the random number generator that are used during each events. Since events are run in parallel and the used random number generator is not thread safe so there is a space vs time tradeoff that need to be considered; should we synchronize access to a shared generator or have multiple generators as needed?
 
+### Measurments
 To answer this question, 3 approaches were investigated. Furthermore, both memory profiling and execution time benchmarking were used to evaluate each approach and compare it to the others.
 
 To benchmark execution time, a script `tests/performance/test.sh` was created to run simulations with increasing number of events using different number of threads. Results were reported as average of 5 runs of this script.
@@ -77,12 +78,14 @@ To profile bottlenecks and performance issues, standard linux `perf` tool was us
 
 All benchmarks used 3 Modules configuration and for the memory profiling the simulation of 1,000,000 events.
 
+### Approaches
 The approaches are as follows:
 1. Each `Event` object has its own random number generator.
 
 Ths approach seemed to be more intuitive and promising; since there will be no need to use mutexes or locks and who doesn't love lock free multithreading :-) 
 
 In fact this turned to be not the case. The Mersenne Twister random number generator used is a heavy object and the penalty of having multiple copies -as the number of events- of it turned out to be practically impossible. The following is a memory profiling analysis when this approach was used.
+![Alt Text](docs/ap1.png)
 
 As seen from the memory profile, this approach make it really hard to simulate millions of events as the memory consumption would explode. As such, this approach was abandoned in favor of the other ones.
 
@@ -90,8 +93,17 @@ As seen from the memory profile, this approach make it really hard to simulate m
 
 This approach while it doesn't look cool enough since it involve locking, but it dramatically improved the memory consumption and the runtime -which was affected by the growing memory usage and eventually going to swap. Based on the memory profiling analysis of the first approach, the random number generator objects occupied the biggest percentage of memory usage and therefore the biggest memory consumer was eliminated.
 The memory profile of this approach is shown in the next picture.
+![Alt Text](docs/ap2.png)
 
-All good, but however, the fact that we are still using a lock for basically the only operation being done didn't look clever. And execution time of this method can be summarized by the following table -average of 5 runs:
+All good, but however, the fact that we are still using a lock for basically the only operation being done didn't look clever. And execution time(ms) of this method can be summarized by the following table -average of 5 runs:
+
+| CPU/Event 	| 100 	| 1000 	| 10000 	| 100000 	| 1000000 	| 10000000  	|
+|-----------	|-----	|------	|-------	|--------	|---------	|-----------	|
+| 1         	| 8.8 	| 62.2 	| 449   	| 5335.2 	| 53051.2 	| 515359    	|
+| 2         	| 3.6 	| 29.4 	| 243.2 	| 3164   	| 30855.4 	| 324893.75 	|
+| 4         	| 4.4 	| 25.6 	| 202.4 	| 1974.4 	| 27426.2 	| 295628.5  	|
+| 6         	| 3.8 	| 24.2 	| 200.2 	| 2693.6 	| 27800.6 	| 287644.5  	|
+| 8         	| 4   	| 22.6 	| 207.2 	| 2241   	| 28415.6 	| 299646    	|
 
 3. Each worker thread has its own random number generator using `thread_local` storage specifier.
 
@@ -99,7 +111,16 @@ This method solves problems in both words. Using the object lifetime storage spe
 
 This approach dramatically improves the performance of the application. The following table show execution time -average of 5 runs:
 
+| CPU/Event 	| 100 	| 1000 	| 10000 	| 100000 	| 1000000 	| 10000000 	|
+|-----------	|-----	|------	|-------	|--------	|---------	|----------	|
+| 1         	| 3.8 	| 28.8 	| 198.4 	| 1986.6 	| 20099.6 	| 224959.8 	|
+| 2         	| 2.4 	| 12   	| 114.6 	| 1268.6 	| 13339.4 	| 150148.4 	|
+| 4         	| 1.8 	| 7.8  	| 80.8  	| 907.2  	| 9744.6  	| 109208.8 	|
+| 6         	| 2   	| 6.8  	| 67.8  	| 828    	| 8860    	| 102334.4 	|
+| 8         	| 1.8 	| 6.8  	| 64    	| 753.4  	| 8347.4  	| 96821.8  	|
+
 Additionally, the following shows the current memory profile of the framework after further memory clean ups.
+![Alt Text](docs/ap3.png)
 
 # Module Development
 To add a new module, you have to implement a class derived from the abstract class `Module`. Furthermore, modules are created by a static factory method `Module::createModule` that takes the name of the required module as input and returns the required module as a `std::shared_ptr<Module>`. You will need to update this method accordingly to allow the instantiation of your module.
